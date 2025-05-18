@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36109.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckCisService", "CheckCisService\CheckCisService.csproj", "{6CECAB18-163C-D4E7-5973-C7DD12BF72BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckCisServiceTests", "CheckCisServiceTests\CheckCisServiceTests.csproj", "{4B032686-0E8C-1511-B7F6-A65AA151F187}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6CECAB18-163C-D4E7-5973-C7DD12BF72BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CECAB18-163C-D4E7-5973-C7DD12BF72BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CECAB18-163C-D4E7-5973-C7DD12BF72BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CECAB18-163C-D4E7-5973-C7DD12BF72BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B032686-0E8C-1511-B7F6-A65AA151F187}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B032686-0E8C-1511-B7F6-A65AA151F187}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B032686-0E8C-1511-B7F6-A65AA151F187}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B032686-0E8C-1511-B7F6-A65AA151F187}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E8466205-AEDD-4BB0-9A9F-1FAAAD913CA4}
+	EndGlobalSection
+EndGlobal
