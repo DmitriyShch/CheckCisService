@@ -248,7 +248,7 @@ namespace CheckCisService.Services
                 CheckCisResult = new()
                 {
                     Uuid = codeCheckResponse.ReqId,
-                    Time = codeCheckResponse.ReqTimestamp,
+                    Time = codeCheckResponse.ReqTimestamp.ToString(),
                     IsOnline = isOnline,
                     Inst = codeCheckResponse.Inst
                 }

@@ -15,7 +15,7 @@ public class CheckCisResult()
     /// <summary>
     /// Время запроса (UnixTime в мс).
     /// </summary>
-    public required long Time { get; init; }
+    public required string Time { get; init; }
     
     /// <summary>
     /// Идентификатор экземпляра ПО (опционально).
