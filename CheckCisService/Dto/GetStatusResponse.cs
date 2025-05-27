@@ -1,4 +1,4 @@
-using static CheckCisService.Controllers.CheckCisController;
+using CheckCisService.Models.Enums;
 
 namespace CheckCisService.Dto
 {

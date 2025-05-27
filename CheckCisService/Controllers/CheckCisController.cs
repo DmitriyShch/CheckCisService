@@ -15,36 +15,14 @@ namespace CheckCisService.Controllers
         ) : ControllerBase
     {
         /// <summary>
-        /// Статусы сервиса проверки КИЗ.
-        /// </summary>
-        public enum CheckCisServiceStatus
-        {
-            /// <summary>
-            /// Проверка прошла успешно.
-            /// </summary>
-            Ok = 0,
-            /// <summary>
-            /// Ошибка онлайн-проверки.
-            /// </summary>
-            OnlineCheckFailed = 1,
-            /// <summary>
-            /// Ошибка офлайн-проверки.
-            /// </summary>
-            OfflineCheckFailed = 2,
-            /// <summary>
-            /// Ошибка обеих проверок.
-            /// </summary>
-            AllChecksFailed = 3,
-        }
-
-        /// <summary>
         /// Получить статус сервиса проверки КИЗ.
         /// </summary>
         [HttpGet("Status")]
-        public IActionResult GetStatus()
+        public async Task<IActionResult> GetStatus()
         {
-            var status = CheckCisServiceStatus.OnlineCheckFailed;
-            logger.LogDebug("GetStatus");
+            logger.LogDebug("GetStatus Begin");
+            var status = await markingApiService.GetStatus();
+            logger.LogDebug("GetStatus {status}", status);
             var result = new GetStatusResponse()
             {
                 StatusCode = (int)status,

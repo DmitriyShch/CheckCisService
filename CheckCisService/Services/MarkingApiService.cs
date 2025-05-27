@@ -2,6 +2,7 @@
 using CheckCisService.Exceptions;
 using CheckCisService.Helpers;
 using CheckCisService.Models;
+using CheckCisService.Models.Enums;
 using Microsoft.Extensions.Options;
 using System.Net;
 using static CheckCisService.Models.CdnListResponse;
@@ -323,5 +324,43 @@ namespace CheckCisService.Services
 
         private MarkGroup? FindMarkGroupByCrptCode(int crptCode) =>
             config.MarkGroups.FirstOrDefault(x => x.CrptCode == crptCode);
+
+        public async Task<CheckCisServiceStatus> GetStatus()
+        {
+            var offlineServiceFailed = await GetOfflineServiceFailed();
+            var onlineServiceFailed = await GetOnlineServiceFailed();
+            var serviceStatusCode =
+                Convert.ToByte(onlineServiceFailed) +
+                Convert.ToByte(offlineServiceFailed) * 2;
+            return (CheckCisServiceStatus)serviceStatusCode;
+        }
+
+        internal async Task<bool> GetOfflineServiceFailed()
+        {
+            try
+            {
+                return (await offlineService.GetStatus())?.Status ==
+                    LocalModuleStatus.READY;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "GetOfflineServiceFailed");
+                return false;
+            }
+        }
+
+        internal async Task<bool> GetOnlineServiceFailed()
+        {
+            try
+            {
+                await ValidateCdnList();
+                return GetActiveCachedCdnList().Count == 0;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "GetOnlineServiceFailed");
+                return false;
+            }
+        }
     }
 }
