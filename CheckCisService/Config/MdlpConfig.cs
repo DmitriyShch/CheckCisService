@@ -36,6 +36,8 @@ namespace CheckCisService.Config
         /// Конфигурация онлайн-сервиса проверки КИЗ.
         /// </summary>
         public required OnlineCheckConfig OnlineService { get; init; }
+
+        public int GetHistoryMaxRecordCount { get; init; } = 100;
     }
 
     /// <summary>

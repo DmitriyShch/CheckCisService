@@ -3,6 +3,7 @@ using CheckCisService.Exceptions;
 using CheckCisService.Helpers;
 using CheckCisService.Models;
 using CheckCisService.Models.Enums;
+using CheckCisService.Repositories;
 using Microsoft.Extensions.Options;
 using System.Net;
 using static CheckCisService.Models.CdnListResponse;
@@ -18,7 +19,8 @@ namespace CheckCisService.Services
         ILogger<MarkingApiService> logger,
         MdlpCashRegHelper mdlpCashRegHelper,
         MarkingOnlineService onlineService,
-        MarkingOfflineService offlineService
+        MarkingOfflineService offlineService,
+        MdlpCheckCisLogRepository mdlpCheckCisLogRepository
         ) : MarkingBaseService(logger)
     {
         /// <summary>
@@ -361,6 +363,14 @@ namespace CheckCisService.Services
                 logger.LogError(ex, "GetOnlineServiceFailed");
                 return false;
             }
+        }
+
+        public List<MdlpCheckCisLog> GetCheckCisHistory(DateTime minDate, DateTime maxDate,
+            string? fiscalSerialNumber)
+        {
+            var history = mdlpCheckCisLogRepository.GetCheckCisHistory(
+                minDate, maxDate, fiscalSerialNumber);
+            return history;
         }
     }
 }

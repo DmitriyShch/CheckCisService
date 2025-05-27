@@ -4,6 +4,7 @@ using CheckCisService.Helpers;
 using CheckCisService.Models;
 using LiteDB;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace CheckCisService.Repositories;
 
@@ -57,8 +58,8 @@ public class MdlpCheckCisLogRepository(
     /// <param name="minDate">Минимальная дата.</param>
     /// <param name="maxDate">Максимальная дата.</param>
     /// <returns>Список логов.</returns>
-    public List<MdlpCheckCisLog> FindAllByFiscalSerialNumberAndDatePeriod(
-        string fiscalSerialNumber, DateTime minDate, DateTime maxDate)
+    public List<MdlpCheckCisLog> GetCheckCisHistory(
+        DateTime minDate, DateTime maxDate, string? fiscalSerialNumber)
     {
         using var db = OpenDb();
         try
@@ -66,10 +67,11 @@ public class MdlpCheckCisLogRepository(
             var col = db.GetCollection<MdlpCheckCisLog>("MdlpCheckCisLogs");
             var itemList = col
                 .Find(x =>
-                x.FiscalSerialNumber == fiscalSerialNumber &&
                 x.RequestDateTime >= minDate &&
-                x.RequestDateTime >= maxDate)
-                .OrderBy(x => x.RequestDateTime)
+                x.RequestDateTime < maxDate.AddDays(1) &&
+                x.FiscalSerialNumber == (fiscalSerialNumber ?? x.FiscalSerialNumber))
+                .OrderByDescending(x => x.RequestDateTime)
+                .Take(mdlpConfig.Value.GetHistoryMaxRecordCount)
                 .ToList();
             logger.LogDebug("Найдено {rowCount} строк логов по " +
                 "fiscalSerialNumber: {fiscalSerialNumber}, minDate: {minDate}, " +

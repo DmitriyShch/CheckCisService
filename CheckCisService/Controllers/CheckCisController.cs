@@ -62,6 +62,28 @@ namespace CheckCisService.Controllers
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
+        [HttpGet("CheckCisHistory")]
+        public IActionResult GetCheckCisHistory(DateTime minDate, DateTime maxDate,
+            string? fiscalSerialNumber)
+        {
+            try
+            {
+                var result = markingApiService.GetCheckCisHistory
+                    (minDate, maxDate, fiscalSerialNumber);
+                logger.LogInformation("CheckCisController.GetCheckCisHistory. " +
+                    "minDate: {minDate}, maxDate: {maxDate}, " +
+                    "fiscalSerialNumber: {fiscalSerialNumber}. Found {count} rows.", minDate,
+                    maxDate, fiscalSerialNumber, result.Count);
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "CheckCisController.GetCheckCisHistory. minDate: {minDate}, " +
+                    "maxDate: {maxDate}, fiscalSerialNumber: {fiscalSerialNumber}, " +
+                    "Message: {Message}", minDate, maxDate, fiscalSerialNumber, ex.Message);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
 
         /// <summary>
         /// Ответ на запрос статуса сервиса.
