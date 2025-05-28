@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using CheckCisService.Exceptions;
+using System.Text;
 
 namespace CheckCisService.Helpers;
 
@@ -72,7 +73,7 @@ public class MdlpCashRegHelper(ILogger<MdlpCashRegHelper> logger)
         logger.LogDebug("Begin FixFullSgtin initialSgtin: {initialSgtin}", initialSgtin);
         
         string fixedSgtin;
-        string restString = initialSgtin;
+        string restString = initialSgtin.Replace(GROUP_SEPARATOR.ToString(), "");
 
         CheckPrefix(GTIN_PREFIX, "КМ", true, ref restString);
         ExtractToken(GTIN_SIZE, "GTIN", ref restString, out string gtin);
@@ -127,7 +128,7 @@ public class MdlpCashRegHelper(ILogger<MdlpCashRegHelper> logger)
             {
                 logger.LogError("Некорректный префикс {prefixName}: {text}. " +
                     "Ожидается: {prefix}.", prefixName, text, prefix);
-                throw new MdlpHelperException($"Некорректный префикс " +
+                throw new WrongCodeException($"Некорректный префикс " +
                     $"{prefixName}: {text}. Ожидается: {prefix}.");
             }
             return false;
@@ -152,7 +153,7 @@ public class MdlpCashRegHelper(ILogger<MdlpCashRegHelper> logger)
             logger.LogError("Некорректная длина {tokenName}: {text}. " +
                 "Ожидается: {tokenSize}, фактически: {text.Length}.",
                 tokenName, text, tokenSize, text.Length);
-            throw new MdlpHelperException($"Некорректная длина {tokenName}: {text}. " +
+            throw new WrongCodeException($"Некорректная длина {tokenName}: {text}. " +
                 $"Ожидается: {tokenSize}, фактически: {text.Length}.");
         }
 

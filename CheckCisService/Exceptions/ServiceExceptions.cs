@@ -18,3 +18,11 @@ public class ObjectNotExistsException : ServiceException
     { }
 }
 
+public class WrongCodeException : ServiceException
+{
+    public WrongCodeException(string? message) : base(message) { }
+
+    public WrongCodeException(string? message, Exception? innerException) :
+        base(message, innerException)
+    { }
+}

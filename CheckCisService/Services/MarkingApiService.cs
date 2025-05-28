@@ -143,6 +143,7 @@ namespace CheckCisService.Services
         public virtual async Task<CheckCisDto?> CheckCis(string code, string? fiscalSerialNumber)
         {
             var fixedCode = mdlpCashRegHelper.AutoCorrectWrongCodepage(code);
+            fixedCode = mdlpCashRegHelper.FixFullSgtin(fixedCode);
             config.FiscalSerialNumber = fiscalSerialNumber ?? config.FiscalSerialNumber;
 
             mdlpCheckCisLogService.SetBaseProps(cis: fixedCode,

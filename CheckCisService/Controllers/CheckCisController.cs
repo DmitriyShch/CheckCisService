@@ -1,3 +1,4 @@
+using CheckCisService.Exceptions;
 using CheckCisService.Helpers;
 using CheckCisService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,12 @@ namespace CheckCisService.Controllers
                 logger.LogDebug("CheckCisController.CheckCis. " +
                     "cis: {cis}, Result: {Result}", cis, result.Json());
                 return new OkObjectResult(result);
+            }
+            catch (WrongCodeException ex)
+            {
+                logger.LogError(ex, "CheckCisController.CheckCis. " +
+                    "cis: {cis} Message: {Message}", cis, ex.Message);
+                return new BadRequestObjectResult(ex.Message);
             }
             catch (Exception ex)
             {
