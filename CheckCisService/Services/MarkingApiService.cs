@@ -157,8 +157,16 @@ namespace CheckCisService.Services
 
             var checkCisDto = ToCheckCisDto(checkResult!, checkResult.IsOnline);
             var respBody = checkResult.Json();
-            if (checkCisDto?.Status == false)
+            if (checkCisDto.Status == false)
                 respBody = $"{checkCisDto.Description} {respBody}";
+
+            if (checkCisDto.Status == true &&
+                string.IsNullOrEmpty(checkCisDto.CheckCisResult?.Uuid))
+            {
+                logger.LogWarning("MarkingApiService.CheckCis Status == true with empty Uuid. " +
+                    "code: {code}, checkCisDto {checkCisDto}", code, checkCisDto.Json());
+                checkCisDto.Status = false;
+            }
 
             mdlpCheckCisLogService.SaveLog(checkResult.Host, checkResult.Duration,
                 responseBody: respBody, responseStatus: (int)HttpStatusCode.OK,
@@ -330,15 +338,15 @@ namespace CheckCisService.Services
 
         public async Task<CheckCisServiceStatus> GetStatus()
         {
-            var offlineServiceFailed = await GetOfflineServiceFailed();
-            var onlineServiceFailed = await GetOnlineServiceFailed();
+            var offlineService = await GetOfflineService();
+            var onlineService = await GetOnlineService();
             var serviceStatusCode =
-                Convert.ToByte(onlineServiceFailed) +
-                Convert.ToByte(offlineServiceFailed) * 2;
+                Convert.ToByte(!onlineService) +
+                Convert.ToByte(!offlineService) * 2;
             return (CheckCisServiceStatus)serviceStatusCode;
         }
 
-        internal async Task<bool> GetOfflineServiceFailed()
+        internal async Task<bool> GetOfflineService()
         {
             try
             {
@@ -347,21 +355,21 @@ namespace CheckCisService.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "GetOfflineServiceFailed");
+                logger.LogError(ex, "GetOfflineService");
                 return false;
             }
         }
 
-        internal async Task<bool> GetOnlineServiceFailed()
+        internal async Task<bool> GetOnlineService()
         {
             try
             {
                 await ValidateCdnList();
-                return GetActiveCachedCdnList().Count == 0;
+                return GetActiveCachedCdnList().Count > 0;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "GetOnlineServiceFailed");
+                logger.LogError(ex, "GetOnlineService");
                 return false;
             }
         }

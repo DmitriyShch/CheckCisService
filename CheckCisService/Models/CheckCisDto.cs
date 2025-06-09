@@ -11,7 +11,7 @@ namespace CheckCisService.Models
         /// Итоговый статус проверки КИЗ (true — успешно, false — ошибка).
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public bool? Status { get; init; }
+        public bool? Status { get; set; }
     
         /// <summary>
         /// Описание результата проверки КИЗ.
