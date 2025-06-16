@@ -36,7 +36,7 @@ namespace CheckCisService.Services
             fiscalRegNumber = mdlpConfig.Value.FiscalSerialNumber;
             this.logger = logger;
             checkCodeHttpClient = CreateHttpClient(keepAlive: true);
-            requestTimeout = TimeSpan.FromMilliseconds(config.ReqTimeout);
+            requestTimeout = config.ReqTimeout;
             uriResolver = new(config.Host, config.UrlPrefix);
         }
 
@@ -57,14 +57,22 @@ namespace CheckCisService.Services
         public async Task<MarkingModuleStatusDto?> GetStatus()
         {
             using var client = checkCodeHttpClient;
+            var cts = new CancellationTokenSource(config.ReqTimeout);
             try
             {
-                var cdnListResponse = await client.GetAsync(uriResolver.StatusUri);
-                cdnListResponse.EnsureSuccessStatusCode();
-                var txt = await cdnListResponse.Content.ReadAsStringAsync();
+                var response = await client.GetAsync(uriResolver.StatusUri, cts.Token);
+                response.EnsureSuccessStatusCode();
+                var txt = await response.Content.ReadAsStringAsync();
                 var markingModuleStatusDto =
                     JsonConvert.DeserializeObject<MarkingModuleStatusDto>(txt);
                 return markingModuleStatusDto;
+            }
+            catch (TaskCanceledException ex)
+            {
+                logger.LogError(ex, "[Timeout] Превышено время ожидания " +
+                    "{requestTimeout} мсек для StatusUri {statusUri}",
+                    config.ReqTimeout, uriResolver.StatusUri);
+                throw new TimeoutException("Превышено время ожидания", ex);
             }
             catch (Exception ex)
             {

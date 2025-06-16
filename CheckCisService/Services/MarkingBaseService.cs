@@ -13,7 +13,7 @@ namespace CheckCisService.Services
         /// <summary>
         /// Таймаут для выполнения запроса.
         /// </summary>
-        protected TimeSpan requestTimeout;
+        protected int requestTimeout;
 
         /// <summary>
         /// Выполняет запрос проверки КИЗ и возвращает ответ сервиса.

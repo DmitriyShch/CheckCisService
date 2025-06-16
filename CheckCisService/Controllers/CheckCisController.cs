@@ -21,15 +21,25 @@ namespace CheckCisService.Controllers
         [HttpGet("Status")]
         public async Task<IActionResult> GetStatus()
         {
-            logger.LogDebug("GetStatus Begin");
-            var status = await markingApiService.GetStatus();
-            logger.LogDebug("GetStatus {status}", status);
-            var result = new GetStatusResponse()
+            var startTime = DateTime.Now;
+            try
             {
-                StatusCode = (int)status,
-                StatusName = status.ToString(),
-            };
-            return new OkObjectResult(result);
+                var status = await markingApiService.GetStatus();
+                var duration = (DateTime.Now - startTime).TotalMilliseconds;
+                logger.LogDebug("CheckCisController.GetStatus status: {status}, " +
+                    "duration: {duration} msec", status, duration);
+                var result = new GetStatusResponse()
+                {
+                    StatusCode = (int)status,
+                    StatusName = status.ToString(),
+                };
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "CheckCisController.GetStatus");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         /// <summary>

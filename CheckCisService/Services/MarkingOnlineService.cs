@@ -40,7 +40,7 @@ namespace CheckCisService.Services
             fiscalRegNumber = mdlpConfig.Value.FiscalSerialNumber;
             this.logger = logger;
             checkCodeHttpClient = CreateHttpClient(keepAlive: true);
-            requestTimeout = TimeSpan.FromMilliseconds(config.ReqTimeout);
+            requestTimeout = config.ReqTimeout;
             uriResolver = new CheckCisUriResolver(config.Host, config.UrlPrefix);
         }
 

@@ -338,15 +338,36 @@ namespace CheckCisService.Services
 
         public async Task<CheckCisServiceStatus> GetStatus()
         {
-            var offlineService = await GetOfflineService();
-            var onlineService = await GetOnlineService();
-            var serviceStatusCode =
-                Convert.ToByte(!onlineService) +
-                Convert.ToByte(!offlineService) * 2;
-            return (CheckCisServiceStatus)serviceStatusCode;
+            try
+            {
+                var startOfflineServiceTime = DateTime.Now;
+                var offlineService = await GetOfflineServiceStatus();
+                
+                var startOnlineServiceTime = DateTime.Now;
+                var onlineService = await GetOnlineServiceStatus();
+                var endOnlineServiceTime = DateTime.Now;
+                
+                var serviceStatusCode =
+                    Convert.ToByte(!onlineService) +
+                    Convert.ToByte(!offlineService) * 2;
+                
+                var durationOffline = (startOnlineServiceTime - startOfflineServiceTime)
+                    .TotalMilliseconds;
+                var durationOnline = (endOnlineServiceTime - startOnlineServiceTime)
+                    .TotalMilliseconds;
+                logger.LogDebug("MarkingApiService.GetStatus serviceStatusCode: {serviceStatusCode}, " +
+                    "durationOffline: {durationOffline} msec, durationOnline: {durationOnline} msec, ",
+                    serviceStatusCode, durationOffline, durationOnline);
+                return (CheckCisServiceStatus)serviceStatusCode;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "MarkingApiService.GetStatus");
+                throw;
+            }
         }
 
-        internal async Task<bool> GetOfflineService()
+        internal async Task<bool> GetOfflineServiceStatus()
         {
             try
             {
@@ -355,12 +376,12 @@ namespace CheckCisService.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "GetOfflineService");
+                logger.LogError(ex, "GetOfflineServiceStatus");
                 return false;
             }
         }
 
-        internal async Task<bool> GetOnlineService()
+        internal async Task<bool> GetOnlineServiceStatus()
         {
             try
             {
@@ -369,7 +390,7 @@ namespace CheckCisService.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "GetOnlineService");
+                logger.LogError(ex, "GetOnlineServiceStatus");
                 return false;
             }
         }
