@@ -3,6 +3,7 @@ using CheckCisService.Helpers;
 using CheckCisService.Repositories;
 using CheckCisService.Services;
 using Microsoft.AspNetCore.Authentication;
+using Serilog;
 
 namespace CheckCisService
 {
@@ -26,8 +27,25 @@ namespace CheckCisService
                 .AddScheme<AuthenticationSchemeOptions,
                 BasicAuthenticationHandler>("BasicAuthentication", null);
 
+            var logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console(
+                    outputTemplate: "[{Timestamp:HH:mm:ss.ms} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .WriteTo.File("Logs/log-.txt",
+                    outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.ms} {Level:u3}] {Message:lj}{NewLine}{Exception}",
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 7) // храним 7 дней
+                .CreateLogger();
+
+            Log.Logger = logger;
+
+            // Подключаем Serilog как логгер
+            builder.Host.UseSerilog();
+
+            //var app = builder.Build();
+
             builder.Services.AddTransient<MdlpCashRegHelper>();
-            builder.Services.AddTransient<MarkingApiService>();
+            builder.Services.AddSingleton<MarkingApiService>();
             builder.Services.AddTransient<MarkingOfflineService>();
             builder.Services.AddTransient<MarkingOnlineService>();
             builder.Services.AddTransient<MdlpCheckCisLogService>();
